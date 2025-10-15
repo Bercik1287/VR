@@ -9,6 +9,7 @@
 script = ExtResource("1_go701")
 
 [node name="player" parent="." instance=ExtResource("2_5a7ea")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.203709, 0)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.75009, -4.11944)
@@ -21,3 +22,6 @@ mesh = SubResource("BoxMesh_dhqlr")
 [node name="MeshInstance3D3" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.66036, -2.05049, 0.533265)
 mesh = SubResource("BoxMesh_dhqlr")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.9997647, 0, -0.02169273, 0.014805756, 0.7308655, 0.6823609, 0.015854469, -0.6825215, 0.7306935, 0, 7.2332287, 4.6562276)

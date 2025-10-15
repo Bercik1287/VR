@@ -1,3 +1,7 @@
+SubViewport
+Camera3D
+SpotLight3D
+DirectionalLight3D
 MeshInstance3D
 XRController3D
 XRCamera3D

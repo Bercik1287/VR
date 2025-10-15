@@ -1,4 +1,14 @@
-[gd_scene load_steps=2 format=3 uid="uid://pxhys466snf8"]
+[gd_scene load_steps=6 format=3 uid="uid://pxhys466snf8"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_f60y1"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_v0iea"]
+albedo_color = Color(1, 0, 0, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_cvnsp"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6t5aa"]
+albedo_color = Color(0, 0, 0, 1)
 
 [sub_resource type="BoxMesh" id="BoxMesh_dqh08"]
 
@@ -7,7 +17,19 @@
 [node name="XROrigin3D" type="XROrigin3D" parent="."]
 
 [node name="XRCamera3D" type="XRCamera3D" parent="XROrigin3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3994447, -0.5622418)
 current = true
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="XROrigin3D/XRCamera3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3994447, 0.6960453)
+mesh = SubResource("CapsuleMesh_f60y1")
+skeleton = NodePath("../..")
+surface_material_override/0 = SubResource("StandardMaterial3D_v0iea")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="XROrigin3D/XRCamera3D/MeshInstance3D"]
+transform = Transform3D(0.8, 0, 0, 0, 0.2, 0, 0, 0, 0.5, 0, 0.38934034, -0.34939706)
+mesh = SubResource("BoxMesh_cvnsp")
+surface_material_override/0 = SubResource("StandardMaterial3D_6t5aa")
 
 [node name="XRController3D" type="XRController3D" parent="XROrigin3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.12354, 0, -2.56886)
