@@ -1,27 +1,37 @@
-[gd_scene load_steps=4 format=3 uid="uid://dpsylielmg3mq"]
+[gd_scene load_steps=6 format=3 uid="uid://dpsylielmg3mq"]
 
 [ext_resource type="Script" uid="uid://b5sg6hlmv0wsh" path="res://Scripts/world.gd" id="1_go701"]
 [ext_resource type="PackedScene" uid="uid://pxhys466snf8" path="res://Scenes/player.tscn" id="2_5a7ea"]
 
-[sub_resource type="BoxMesh" id="BoxMesh_dhqlr"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5a7ea"]
+albedo_color = Color(0, 0, 1, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_go701"]
+size = Vector3(0.2, 0.2, 0.2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_5a7ea"]
+size = Vector3(0.2, 0.2, 0.2)
 
 [node name="world" type="Node3D"]
 script = ExtResource("1_go701")
 
 [node name="player" parent="." instance=ExtResource("2_5a7ea")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.203709, 0)
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.75009, -4.11944)
-mesh = SubResource("BoxMesh_dhqlr")
-
-[node name="MeshInstance3D2" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.77523, 0, 0.477715)
-mesh = SubResource("BoxMesh_dhqlr")
-
-[node name="MeshInstance3D3" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.66036, -2.05049, 0.533265)
-mesh = SubResource("BoxMesh_dhqlr")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5806582, 0)
+use_smooth_turning = false
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.9997647, 0, -0.02169273, 0.014805756, 0.7308655, 0.6823609, 0.015854469, -0.6825215, 0.7306935, 0, 7.2332287, 4.6562276)
+
+[node name="floor" type="CSGBox3D" parent="."]
+transform = Transform3D(479.3178, 0, 0, 0, 1, 0, 0, 0, 450.69006, 0, 0, 0)
+use_collision = true
+material = SubResource("StandardMaterial3D_5a7ea")
+
+[node name="testGrab" type="RigidBody3D" parent="." groups=["grabbable"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.612985, 1.8259203, -1.5960146)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="testGrab"]
+shape = SubResource("BoxShape3D_go701")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="testGrab"]
+mesh = SubResource("BoxMesh_5a7ea")
