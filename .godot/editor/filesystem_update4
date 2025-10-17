@@ -1,2 +1,4 @@
 res://Scenes/world.tscn
 res://openxr_action_map.tres
+res://Scenes/player.tscn
+res://Scripts/player.gd
