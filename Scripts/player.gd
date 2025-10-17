@@ -24,6 +24,15 @@ var is_grounded: bool = false
 var grabbed_object_left = null
 var grabbed_object_right = null
 
+# Śledzenie prędkości kontrolerów
+var left_controller_prev_pos: Vector3 = Vector3.ZERO
+var right_controller_prev_pos: Vector3 = Vector3.ZERO
+var left_controller_velocity: Vector3 = Vector3.ZERO
+var right_controller_velocity: Vector3 = Vector3.ZERO
+var velocity_samples_left: Array = []
+var velocity_samples_right: Array = []
+@export var velocity_sample_count: int = 5  # Ilość próbek do uśrednienia
+
 # Wskaźnik teleportacji (opcjonalnie)
 var teleport_marker: MeshInstance3D
 var is_teleport_valid: bool = false
@@ -34,20 +43,65 @@ func _ready() -> void:
 	if left_controller:
 		left_controller.button_pressed.connect(_on_left_button_pressed)
 		left_controller.button_released.connect(_on_left_button_released)
+		left_controller_prev_pos = left_controller.global_position
 	
 	if right_controller:
 		right_controller.button_pressed.connect(_on_right_button_pressed)
 		right_controller.button_released.connect(_on_right_button_released)
+		right_controller_prev_pos = right_controller.global_position
 	
 	# Tworzenie markera teleportacji
 	if teleport_enabled:
 		_create_teleport_marker()
 
 func _physics_process(delta: float) -> void:
+	_update_controller_velocities(delta)
 	_handle_movement(delta)
 	_handle_rotation(delta)
 	_apply_gravity(delta)
 	_check_ground()
+
+# ===== ŚLEDZENIE PRĘDKOŚCI KONTROLERÓW =====
+func _update_controller_velocities(delta: float) -> void:
+	if delta == 0:
+		return
+	
+	# Lewy kontroler
+	if left_controller:
+		var current_pos = left_controller.global_position
+		var instant_velocity = (current_pos - left_controller_prev_pos) / delta
+		left_controller_prev_pos = current_pos
+		
+		# Dodaj do tablicy próbek
+		velocity_samples_left.append(instant_velocity)
+		if velocity_samples_left.size() > velocity_sample_count:
+			velocity_samples_left.pop_front()
+		
+		# Oblicz średnią prędkość
+		left_controller_velocity = _average_velocity(velocity_samples_left)
+	
+	# Prawy kontroler
+	if right_controller:
+		var current_pos = right_controller.global_position
+		var instant_velocity = (current_pos - right_controller_prev_pos) / delta
+		right_controller_prev_pos = current_pos
+		
+		# Dodaj do tablicy próbek
+		velocity_samples_right.append(instant_velocity)
+		if velocity_samples_right.size() > velocity_sample_count:
+			velocity_samples_right.pop_front()
+		
+		# Oblicz średnią prędkość
+		right_controller_velocity = _average_velocity(velocity_samples_right)
+
+func _average_velocity(samples: Array) -> Vector3:
+	if samples.is_empty():
+		return Vector3.ZERO
+	
+	var sum = Vector3.ZERO
+	for sample in samples:
+		sum += sample
+	return sum / samples.size()
 
 # ===== RUCH =====
 func _handle_movement(delta: float) -> void:
@@ -254,12 +308,17 @@ func _release_object(hand: String) -> void:
 		
 		if obj is RigidBody3D:
 			obj.freeze = false
-			# Dodanie prędkości przy rzucaniu
-			var controller = left_controller if hand == "left" else right_controller
-			if controller.get("linear_velocity"):
-				obj.linear_velocity = controller.get("linear_velocity")
+			
+			# APLIKOWANIE PRĘDKOŚCI PRZY RZUCANIU
+			var controller_velocity = left_controller_velocity if hand == "left" else right_controller_velocity
+			obj.linear_velocity = controller_velocity
+			
+			# Opcjonalnie: dodaj prędkość kątową dla bardziej realistycznego rzutu
+			# obj.angular_velocity = controller_velocity.cross(Vector3.UP) * 2.0
 		
 		if hand == "left":
 			grabbed_object_left = null
+			velocity_samples_left.clear()
 		else:
 			grabbed_object_right = null
+			velocity_samples_right.clear()
